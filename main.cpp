@@ -157,7 +157,7 @@ void loop() {
 	else if (aperatureActive == 1 && timeDuration >= automaticCollapseMS) {
 		// Automatic collapse after time duration, roll in
 		
-				// Step the motors backwards, so we start with motor 3
+		// Step the motors backwards, so we start with motor 3
 		MoveMotor(MOTOR_THREE, -1 * motor3AM);
 		MoveMotor(MOTOR_TWO, -1 * motor2AM);
 		MoveMotor(MOTOR_ONE, -1 * motor1AM);
@@ -169,8 +169,6 @@ void loop() {
 		timeDuration = 0;
 	}
 	else {
-		// The only path when there is no button interaction
-		
 		delay(1);	// Delay for a milliseconds
 		timeDuration = timeDuration + 1;	// And save that
 	}

@@ -168,9 +168,13 @@ void loop() {
 		// Set time to null
 		timeDuration = 0;
 	}
-	else {
+	else if (aperatureActive == 1) {
 		delay(1);	// Delay for a milliseconds
 		timeDuration = timeDuration + 1;	// And save that
+	}
+	else {
+		// Aperature is not doing anything, Sleep to preserve power?
+		delay(1);
 	}
 }
 

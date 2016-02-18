@@ -130,7 +130,8 @@ void setup() {
 void loop() {
 	int currentButtonState = digitalRead(buttonPin);
 	
-	if (aperatureActive == 0 && currentButtonState == 1) {
+	if (aperatureActive == 0 && digitalRead(buttonPin) == HIGH) {
+		Serial.print("Button pressed, starting motors forward");
 		// Someone pressed the button while the aperature was inactive, start rolling out..
 		
 		// Step the motors
@@ -142,7 +143,8 @@ void loop() {
 		// Save the state
 		aperatureActive = 1;
 	}
-	else if (aperatureActive == 1 && currentButtonState == 1) {
+	else if (aperatureActive == 1 && digitalRead(buttonPin)== HIGH) {
+		Serial.print("Button pressed, starting motors backwards");
 		// The aperature was active  and the button was pressed, roll in
 		
 		// Step the motors backwards, so we start with motor 3
@@ -157,6 +159,7 @@ void loop() {
 		timeDuration = 0;
 	}
 	else if (aperatureActive == 1 && timeDuration >= automaticCollapseMS) {
+		Serial.print("Time run out, starting motors backwards");
 		// Automatic collapse after time duration, roll in
 		
 		// Step the motors backwards, so we start with motor 3
@@ -177,8 +180,6 @@ void loop() {
 	else {
 		// Aperature is not doing anything, Sleep to preserve power?
 		delay(1);
-		
-		Serial.print("No action");
 	}
 }
 

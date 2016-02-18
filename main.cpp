@@ -35,10 +35,10 @@ enum EMotor {
 const int steps_per_revolution = 200;
 
 // Motor1 pins 1 to 4
-const int m1_p1 = 1;
-const int m1_p2 = 2;
-const int m1_p3 = 3;
-const int m1_p4 = 4;
+const int m1_p1 = 10;
+const int m1_p2 = 11;
+const int m1_p3 = 12;
+const int m1_p4 = 13;
 
 // Motor2 pins 5 to 8
 const int m2_p1 = 5;
@@ -53,7 +53,7 @@ const int m3_p3 = 11;
 const int m3_p4 = 12;
 
 // Button input, pin 13
-const int buttonPin = 13;
+const int buttonPin = 2;
 
 // Button pressed(1) or released(0)?
 // int savedButtonState = 0;
@@ -123,6 +123,8 @@ void setup() {
 	SetMotorSpeed(MOTOR_ALL, 60);		// Check C++98 enum?
 	
 	Serial.begin(9600);
+	
+	Serial.print("Program starting");
 }
 
 void loop() {
@@ -175,6 +177,8 @@ void loop() {
 	else {
 		// Aperature is not doing anything, Sleep to preserve power?
 		delay(1);
+		
+		Serial.print("No action");
 	}
 }
 

@@ -66,29 +66,31 @@ const int automaticCollapseMS = 10000;
 
 // These variables define the amount the motor works, it's kinda like RPM, think 1 revolution = 360°
 // don't know for sure how this is linked to the Stepper constructor paramter1 so be careful testing this!
-const int motor1AM = 10;
-const int motor2AM = 10;
-const int motor3AM = 10;
+const int motor1AM = 200;
+const int motor2AM = 200;
+const int motor3AM = 200;
 
 Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
-Stepper motor2(steps_per_revolution, m2_p1, m2_p2, m2_p3, m2_p4);
-Stepper motor3(steps_per_revolution, m3_p1, m3_p2, m3_p3, m3_p4);
+//Stepper motor2(steps_per_revolution, m2_p1, m2_p2, m2_p3, m2_p4);
+//Stepper motor3(steps_per_revolution, m3_p1, m3_p2, m3_p3, m3_p4);
 
 void SetMotorSpeed(EMotor motor, unsigned int speed) {
 	switch (motor) {
 		case MOTOR_ONE:
 			motor1.setSpeed(speed);
 		break;
-		case MOTOR_TWO:
-			motor2.setSpeed(speed);
-		break;
-		case MOTOR_THREE:
-			motor3.setSpeed(speed);
-		break;
+		//case MOTOR_TWO:
+		//	motor2.setSpeed(speed);
+		//break;
+		//case MOTOR_THREE:
+		//	motor3.setSpeed(speed);
+		//break;
 		case MOTOR_ALL:
 			motor1.setSpeed(speed);
-			motor2.setSpeed(speed);
-			motor3.setSpeed(speed);
+			//motor2.setSpeed(speed);
+			//motor3.setSpeed(speed);
+		break;
+		default:
 		break;
 	}
 }
@@ -101,16 +103,18 @@ void MoveMotor(EMotor motor, int revolutions) {
 		case MOTOR_ONE:
 			motor1.step(revolutions);
 		break;
-		case MOTOR_TWO:
-			motor2.step(revolutions);
-		break;
-		case MOTOR_THREE:
-			motor3.step(revolutions);
-		break;
+		//case MOTOR_TWO:
+		//	motor2.step(revolutions);
+		//break;
+		//case MOTOR_THREE:
+		//	motor3.step(revolutions);
+		//break;
 		case MOTOR_ALL:
 			motor1.step(revolutions);
-			motor2.step(revolutions);
-			motor3.step(revolutions);
+			//motor2.step(revolutions);
+			//motor3.step(revolutions);
+		break;
+		default:
 		break;
 	}
 }
@@ -137,8 +141,8 @@ void loop() {
 		// Step the motors
 		// Remember: For now this moves the motors one after another.. see MoveMotor comments
 		MoveMotor(MOTOR_ONE, motor1AM);
-		MoveMotor(MOTOR_TWO, motor2AM);
-		MoveMotor(MOTOR_THREE, motor3AM);
+		//MoveMotor(MOTOR_TWO, motor2AM);
+		//MoveMotor(MOTOR_THREE, motor3AM);
 		
 		// Save the state
 		aperatureActive = 1;
@@ -148,8 +152,8 @@ void loop() {
 		// The aperature was active  and the button was pressed, roll in
 		
 		// Step the motors backwards, so we start with motor 3
-		MoveMotor(MOTOR_THREE, -1 * motor3AM);
-		MoveMotor(MOTOR_TWO, -1 * motor2AM);
+		//MoveMotor(MOTOR_THREE, -1 * motor3AM);
+		//MoveMotor(MOTOR_TWO, -1 * motor2AM);
 		MoveMotor(MOTOR_ONE, -1 * motor1AM);
 		
 		// Save the state
@@ -163,8 +167,8 @@ void loop() {
 		// Automatic collapse after time duration, roll in
 		
 		// Step the motors backwards, so we start with motor 3
-		MoveMotor(MOTOR_THREE, -1 * motor3AM);
-		MoveMotor(MOTOR_TWO, -1 * motor2AM);
+		//MoveMotor(MOTOR_THREE, -1 * motor3AM);
+		//MoveMotor(MOTOR_TWO, -1 * motor2AM);
 		MoveMotor(MOTOR_ONE, -1 * motor1AM);
 		
 		// Save the state

@@ -74,7 +74,7 @@ Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
 //Stepper motor2(steps_per_revolution, m2_p1, m2_p2, m2_p3, m2_p4);
 //Stepper motor3(steps_per_revolution, m3_p1, m3_p2, m3_p3, m3_p4);
 
-void SetMotorSpeed(EMotor motor, unsigned int speed) {
+void SetMotorSpeed(EMotor motor, long speed) {
 	switch (motor) {
 		case MOTOR_ONE:
 			motor1.setSpeed(speed);
@@ -134,7 +134,7 @@ void setup() {
 void loop() {
 	int currentButtonState = digitalRead(buttonPin);
 	
-	if (aperatureActive == 0 && digitalRead(buttonPin) == HIGH) {
+	if (aperatureActive == 0 && currentButtonState == HIGH) {
 		Serial.print("Button pressed, starting motors forward");
 		// Someone pressed the button while the aperature was inactive, start rolling out..
 		
@@ -147,7 +147,7 @@ void loop() {
 		// Save the state
 		aperatureActive = 1;
 	}
-	else if (aperatureActive == 1 && digitalRead(buttonPin)== HIGH) {
+	else if (aperatureActive == 1 && currentButtonState == HIGH) {
 		Serial.print("Button pressed, starting motors backwards");
 		// The aperature was active  and the button was pressed, roll in
 		

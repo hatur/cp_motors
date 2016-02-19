@@ -1,7 +1,8 @@
 /**
 * For use with the Arduino/Genuino IDE
 * 
-* Program controlling motors
+* Program for controlling BYJ48 Motors (and only these!) with step angle of 5,625°~
+* For other motors (1.8° step angle etc.) the values of steps_per_revolutions and motor1AM (motor2AM, motor3AM) have to be changed accordingly
 *
 * License information:
 * The MIT License (MIT)
@@ -31,8 +32,8 @@ enum EMotor {
 	MOTOR_THREE
 };
 
-// Number of steps (signals) required to do a 360° rotation (?)
-const int steps_per_revolution = 200;
+// We set the steps per revolution to 64 because the step angle of the motor is 5,625 per revolution, so a full turn is defined as 360°/5.625 = 64 (???)
+const int steps_per_revolution = 64;
 
 // Motor1 pins 1 to 4
 const int m1_p1 = 10;
@@ -64,11 +65,11 @@ unsigned int timeDuration = 0;
 // TODO: Is there a time library or can we use C time?
 const int automaticCollapseMS = 10000;
 
-// These variables define the amount the motor works, it's kinda like RPM, think 1 revolution = 360°
-// don't know for sure how this is linked to the Stepper constructor paramter1 so be careful testing this!
-const int motor1AM = 200;
-const int motor2AM = 200;
-const int motor3AM = 200;
+// These constants define the amount the motorknob is rotated, it needs to be a multiple of 32, 2048 / 32 = 64 (one turn)
+// So for a 1.5x turn we need to set it to 2048 + 1024 = 3072
+const int motor1AM = 2048;
+const int motor2AM = 2048;
+const int motor3AM = 2048;
 
 Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
 //Stepper motor2(steps_per_revolution, m2_p1, m2_p2, m2_p3, m2_p4);
@@ -124,7 +125,7 @@ void setup() {
 	pinMode(buttonPin, INPUT);
 	
 	// Set the motor speed for all motor, change if necessary calling each one seperately
-	SetMotorSpeed(MOTOR_ALL, 60);		// Check C++98 enum?
+	SetMotorSpeed(MOTOR_ALL, 500);		// Check C++98 enum?
 	
 	Serial.begin(9600);
 	

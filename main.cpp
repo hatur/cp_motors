@@ -26,10 +26,10 @@
 #include <Stepper.h>
 
 enum EMotor {
-	MOTOR_ALL,
-	MOTOR_ONE,
-	MOTOR_TWO,
-	MOTOR_THREE
+  MOTOR_ALL,
+  MOTOR_ONE,
+  MOTOR_TWO,
+  MOTOR_THREE
 };
 
 // We set the steps per revolution to 64 because the step angle of the motor is 5,625 per revolution, so a full turn is defined as 360°/5.625 = 64 (???)
@@ -65,11 +65,13 @@ unsigned int timeDuration = 0;
 // TODO: Is there a time library or can we use C time?
 const int automaticCollapseMS = 10000;
 
-// These constants define the amount the motorknob is rotated, it needs to be a multiple of 32, 2048 / 32 = 64 (one turn)
-// So for a 1.5x turn we need to set it to 2048 + 1024 = 3072
-const int motor1AM = 2048;
-const int motor2AM = 2048;
-const int motor3AM = 2048;
+// Half of a full revolution (64)
+const int halfStep = 32;
+
+// These constants define the amount the motorknob is rotated where 64 represents a full rotation
+const int motor1AM = 64;
+const int motor2AM = 64;
+const int motor3AM = 64;
 
 Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
 //Stepper motor2(steps_per_revolution, m2_p1, m2_p2, m2_p3, m2_p4);
@@ -77,110 +79,147 @@ Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
 
 void SetMotorSpeed(EMotor motor, long speed) {
 	switch (motor) {
-		case MOTOR_ONE:
-			motor1.setSpeed(speed);
-		break;
-		//case MOTOR_TWO:
-		//	motor2.setSpeed(speed);
-		//break;
-		//case MOTOR_THREE:
-		//	motor3.setSpeed(speed);
-		//break;
-		case MOTOR_ALL:
-			motor1.setSpeed(speed);
-			//motor2.setSpeed(speed);
-			//motor3.setSpeed(speed);
-		break;
-		default:
-		break;
+	case MOTOR_ONE:
+		motor1.setSpeed(speed);
+	break;
+	//case MOTOR_TWO:
+		//motor2.setSpeed(speed);
+	//break;
+	//case MOTOR_THREE:
+		//motor3.setSpeed(speed);
+	//break;
+	case MOTOR_ALL:
+		motor1.setSpeed(speed);
+		//motor2.setSpeed(speed);
+		//motor3.setSpeed(speed);
+	break;
+	default:
+	break;
 	}
 }
 
-// @revolutions = positive amounts move the motorknob forwards, negative amounts backwards
-// remember that .step() is blocking, so if we want to move all motors at once we need a different approach/function
-// with revolution deltas
-void MoveMotor(EMotor motor, int revolutions) {
+// Moves EMotor motors by the values defined in motor1-3AM constants
+// if you need non blocking (fake synchronized) movement use MoveMotorsSynced() instead
+void MoveMotor(EMotor motor, bool forward) {
+	const int modifier = 1;
+
+	if (!forward) {
+		modifier = -1;
+	}
+  
 	switch (motor) {
-		case MOTOR_ONE:
-			motor1.step(revolutions);
-		break;
-		//case MOTOR_TWO:
-		//	motor2.step(revolutions);
-		//break;
-		//case MOTOR_THREE:
-		//	motor3.step(revolutions);
-		//break;
-		case MOTOR_ALL:
-			motor1.step(revolutions);
-			//motor2.step(revolutions);
-			//motor3.step(revolutions);
-		break;
-		default:
-		break;
+	case MOTOR_ONE:
+	motor1.step(modifier * halfStep * motor1AM);
+	break;
+	//case MOTOR_TWO:
+		//motor2.step(modifier * halfStep * motor2AM);
+	//break;
+	//case MOTOR_THREE:
+		//motor3.step(modifier * halfStep * motor3AM);
+	//break;
+	case MOTOR_ALL:
+		motor1.step(modifier * halfStep * motor1AM);
+		//motor2.step(modifier * halfStep * motor2AM);
+		//motor3.step(modifier * halfStep * motor3AM);
+	break;
+	default:
+	break;
+	}
+}
+
+// This is pretty fixed but it moves all our 3 motors per delta at once
+// It takes the values direclty from the motor1-3AM constants
+void MoveMotorsSynced(bool forward) {
+	const unsigned int highestVal = static_cast<unsigned int>(max(motor1AM, max(motor2AM, motor3AM)));
+
+	const int modifier = 1;
+
+	if (!forward) {
+		modifier = -1;
+	}
+
+	for (unsigned int i = 0; i < highestVal; ++i) {
+		if (i < motor1AM) {
+			motor1.step(modifier * halfStep);
+		}
+
+		if (i < motor2AM) {
+			//motor2.step(modifier * halfStep);
+		}
+
+		if (i < motor3AM) {
+			//motor3.step(modifier * halfStep);
+		}
 	}
 }
 
 void setup() {
 	// Setup the button pin as input
 	pinMode(buttonPin, INPUT);
-	
+
 	// Set the motor speed for all motor, change if necessary calling each one seperately
-	SetMotorSpeed(MOTOR_ALL, 500);		// Check C++98 enum?
-	
+	SetMotorSpeed(MOTOR_ALL, 500);    // Check C++98 enum?
+
 	Serial.begin(9600);
-	
+
 	Serial.print("Program starting");
 }
 
 void loop() {
 	int currentButtonState = digitalRead(buttonPin);
-	
+
 	if (aperatureActive == 0 && currentButtonState == HIGH) {
 		Serial.print("Button pressed, starting motors forward");
 		// Someone pressed the button while the aperature was inactive, start rolling out..
-		
+
 		// Step the motors
 		// Remember: For now this moves the motors one after another.. see MoveMotor comments
-		MoveMotor(MOTOR_ONE, motor1AM);
-		//MoveMotor(MOTOR_TWO, motor2AM);
-		//MoveMotor(MOTOR_THREE, motor3AM);
-		
+		//MoveMotor(MOTOR_ONE, true);
+		//MoveMotor(MOTOR_TWO, true);
+		//MoveMotor(MOTOR_THREE, true);
+
+		MoveMotorsSynced(true);
+
 		// Save the state
 		aperatureActive = 1;
 	}
 	else if (aperatureActive == 1 && currentButtonState == HIGH) {
 		Serial.print("Button pressed, starting motors backwards");
 		// The aperature was active  and the button was pressed, roll in
-		
+
 		// Step the motors backwards, so we start with motor 3
-		//MoveMotor(MOTOR_THREE, -1 * motor3AM);
-		//MoveMotor(MOTOR_TWO, -1 * motor2AM);
-		MoveMotor(MOTOR_ONE, -1 * motor1AM);
-		
+		//MoveMotor(MOTOR_THREE, false);
+		//MoveMotor(MOTOR_TWO, false);
+		//MoveMotor(MOTOR_ONE, false);
+
+		MoveMotorsSynced(false);
+
 		// Save the state
 		aperatureActive = 0;
-		
+
 		// Set time to null
 		timeDuration = 0;
 	}
 	else if (aperatureActive == 1 && timeDuration >= automaticCollapseMS) {
 		Serial.print("Time run out, starting motors backwards");
 		// Automatic collapse after time duration, roll in
-		
+
 		// Step the motors backwards, so we start with motor 3
-		//MoveMotor(MOTOR_THREE, -1 * motor3AM);
-		//MoveMotor(MOTOR_TWO, -1 * motor2AM);
-		MoveMotor(MOTOR_ONE, -1 * motor1AM);
-		
+		//MoveMotor(MOTOR_THREE, false);
+		//MoveMotor(MOTOR_TWO, false);
+		//MoveMotor(MOTOR_ONE, false);
+
+		MoveMotorsSynced(false);
+
 		// Save the state
 		aperatureActive = 0;
-		
+
 		// Set time to null
 		timeDuration = 0;
 	}
 	else if (aperatureActive == 1) {
-		delay(1);	// Delay for a milliseconds
-		timeDuration = timeDuration + 1;	// And save that
+		delay(1); // Delay for a milliseconds
+		timeDuration = timeDuration + 1;  // And save that
 	}
 	else {
 		// Aperature is not doing anything, Sleep to preserve power?

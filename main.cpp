@@ -25,11 +25,11 @@
 
 #include <Stepper.h>
 
-enum EMotor {
-  MOTOR_ALL,
-  MOTOR_ONE,
-  MOTOR_TWO,
-  MOTOR_THREE
+enum class EMotor {
+	MOTOR_ALL,
+	MOTOR_ONE,
+	MOTOR_TWO,
+	MOTOR_THREE
 };
 
 // We set the steps per revolution to 64 because the step angle of the motor is 5,625 per revolution, so a full turn is defined as 360°/5.625 = 64 (???)
@@ -79,16 +79,16 @@ Stepper motor1(steps_per_revolution, m1_p1, m1_p2, m1_p3, m1_p4);
 
 void SetMotorSpeed(EMotor motor, long speed) {
 	switch (motor) {
-	case MOTOR_ONE:
+	case EMotor::MOTOR_ONE:
 		motor1.setSpeed(speed);
 	break;
-	//case MOTOR_TWO:
+	//case EMotor::MOTOR_TWO:
 		//motor2.setSpeed(speed);
 	//break;
-	//case MOTOR_THREE:
+	//case EMotor::MOTOR_THREE:
 		//motor3.setSpeed(speed);
 	//break;
-	case MOTOR_ALL:
+	case EMotor::MOTOR_ALL:
 		motor1.setSpeed(speed);
 		//motor2.setSpeed(speed);
 		//motor3.setSpeed(speed);
@@ -108,16 +108,16 @@ void MoveMotor(EMotor motor, bool forward) {
 	}
   
 	switch (motor) {
-	case MOTOR_ONE:
+	case EMotor::MOTOR_ONE:
 	motor1.step(modifier * halfStep * motor1AM);
 	break;
-	//case MOTOR_TWO:
+	//case EMotor::MOTOR_TWO:
 		//motor2.step(modifier * halfStep * motor2AM);
 	//break;
-	//case MOTOR_THREE:
+	//case EMotor::MOTOR_THREE:
 		//motor3.step(modifier * halfStep * motor3AM);
 	//break;
-	case MOTOR_ALL:
+	case EMotor::MOTOR_ALL:
 		motor1.step(modifier * halfStep * motor1AM);
 		//motor2.step(modifier * halfStep * motor2AM);
 		//motor3.step(modifier * halfStep * motor3AM);
@@ -158,7 +158,7 @@ void setup() {
 	pinMode(buttonPin, INPUT);
 
 	// Set the motor speed for all motor, change if necessary calling each one seperately
-	SetMotorSpeed(MOTOR_ALL, 500);    // Check C++98 enum?
+	SetMotorSpeed(EMotor::MOTOR_ALL, 500);
 
 	Serial.begin(9600);
 
@@ -174,9 +174,9 @@ void loop() {
 
 		// Step the motors
 		// Remember: For now this moves the motors one after another.. see MoveMotor comments
-		//MoveMotor(MOTOR_ONE, true);
-		//MoveMotor(MOTOR_TWO, true);
-		//MoveMotor(MOTOR_THREE, true);
+		//MoveMotor(EMotor::MOTOR_ONE, true);
+		//MoveMotor(EMotor::MOTOR_TWO, true);
+		//MoveMotor(EMotor::MOTOR_THREE, true);
 
 		MoveMotorsSynced(true);
 
@@ -188,9 +188,9 @@ void loop() {
 		// The aperature was active  and the button was pressed, roll in
 
 		// Step the motors backwards, so we start with motor 3
-		//MoveMotor(MOTOR_THREE, false);
-		//MoveMotor(MOTOR_TWO, false);
-		//MoveMotor(MOTOR_ONE, false);
+		//MoveMotor(EMotor::MOTOR_THREE, false);
+		//MoveMotor(EMotor::MOTOR_TWO, false);
+		//MoveMotor(EMotor::MOTOR_ONE, false);
 
 		MoveMotorsSynced(false);
 
@@ -205,9 +205,9 @@ void loop() {
 		// Automatic collapse after time duration, roll in
 
 		// Step the motors backwards, so we start with motor 3
-		//MoveMotor(MOTOR_THREE, false);
-		//MoveMotor(MOTOR_TWO, false);
-		//MoveMotor(MOTOR_ONE, false);
+		//MoveMotor(EMotor::MOTOR_THREE, false);
+		//MoveMotor(EMotor::MOTOR_TWO, false);
+		//MoveMotor(EMotor::MOTOR_ONE, false);
 
 		MoveMotorsSynced(false);
 

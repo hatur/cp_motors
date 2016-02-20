@@ -101,7 +101,7 @@ void SetMotorSpeed(EMotor motor, long speed) {
 // Moves EMotor motors by the values defined in motor1-3AM constants
 // if you need non blocking (fake synchronized) movement use MoveMotorsSynced() instead
 void MoveMotor(EMotor motor, bool forward) {
-	const int modifier = 1;
+	int modifier = 1;
 
 	if (!forward) {
 		modifier = -1;
@@ -132,7 +132,7 @@ void MoveMotor(EMotor motor, bool forward) {
 void MoveMotorsSynced(bool forward) {
 	const unsigned int highestVal = static_cast<unsigned int>(max(motor1AM, max(motor2AM, motor3AM)));
 
-	const int modifier = 1;
+	int modifier = 1;
 
 	if (!forward) {
 		modifier = -1;
